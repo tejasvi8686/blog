@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { categories } from "../../../../constant/index.js"
+import { categories } from "../../../../constant/index.js";
 
 const BlogGrid = ({ posts }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -10,7 +10,7 @@ const BlogGrid = ({ posts }) => {
 
   return (
     <div className="bg-slate-100 min-h-screen">
-      <div className="max-w-5xl mx-auto p-4">
+      <div className="max-w-5xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6 bg-blue-500 py-2 px-4 rounded-t-lg">
           <button className="bg-yellow-400 hover:bg-yellow-500 text-black px-7 py-2 rounded-full">
             Blog Grid
@@ -36,11 +36,14 @@ const BlogGrid = ({ posts }) => {
               key={post.id}
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
-              <img
-                src={post.image || "default-image-url.jpg"}
-                alt={post.title}
-                className="w-full h-48 object-cover"
-              />
+              {/* Display the uploaded image */}
+              {post.image && (
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
               <div className="p-4">
                 <h3 className="text-lg font-bold mb-2">{post.title}</h3>
                 <p className="text-gray-600">{post.category}</p>

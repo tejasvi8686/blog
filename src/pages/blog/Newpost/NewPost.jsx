@@ -2,23 +2,42 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { categories } from "../../../constant/index.js"; 
+import { categories } from "../../../constant/index.js";
 
 const NewPost = ({ addNewPost }) => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
 
+  // handle image function
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImage(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handlePost = () => {
-    const newPost = { title, category, content, location: "Your Location" };
-    addNewPost(newPost); 
+    const newPost = {
+      title,
+      category,
+      content,
+      image,
+      location: "Your Location",
+    };
+    addNewPost(newPost);
     navigate("/dashboard/createblog/newpost/blogGrid");
   };
 
   return (
     <section className="bg-slate-200">
-      <div className="max-w-5xl mx-auto p-4">
+      <div className="max-w-5xl mx-auto p-6">
         <div className="bg-blue-500 text-white py-2 px-4 rounded-t-lg">
           <button className="bg-yellow-400 hover:bg-yellow-500 text-black px-7 py-2 rounded-full">
             New Post
@@ -70,9 +89,16 @@ const NewPost = ({ addNewPost }) => {
             />
           </div>
 
+          <div className=" sm:pt-10 pt-16  ">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Upload Image
+            </label>
+            <input type="file" onChange={handleImageChange} />
+          </div>
+
           <button
             onClick={handlePost}
-            className="bg-blue-500 text-white px-6 py-2 mt-16 rounded-md hover:bg-blue-700"
+            className="bg-blue-500 text-white px-6 py-2 mt-10 rounded-md hover:bg-blue-700"
           >
             Post
           </button>
