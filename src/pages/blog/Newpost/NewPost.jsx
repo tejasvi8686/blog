@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { categories } from "../../../constant/index.js";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const NewPost = ({ addNewPost }) => {
   const [title, setTitle] = useState("");
@@ -32,14 +34,25 @@ const NewPost = ({ addNewPost }) => {
       location: "Your Location",
     };
     addNewPost(newPost);
-    navigate("/dashboard/createblog/newpost/blogGrid");
+  
+    // Show success toast
+    toast.success("Post created successfully!", {
+      position: "top-right",
+      autoClose: 2000, // 2 seconds before it closes automatically
+    });
+  
+    // Navigate to BlogGrid after the toast has had time to display
+    setTimeout(() => {
+      navigate("/dashboard/createblog/newpost/blogGrid");
+    }, 2000); // Wait for 2 seconds before navigating
   };
+  
 
   return (
     <section className="bg-slate-200">
       <div className="max-w-5xl mx-auto p-6">
         <div className="bg-blue-500 text-white py-2 px-4 rounded-t-lg">
-          <button className="bg-yellow-400 hover:bg-yellow-500 text-black px-7 py-2 rounded-full">
+          <button className="bg-yellow-400  text-black px-7 py-2 rounded-full">
             New Post
           </button>
         </div>
@@ -51,6 +64,7 @@ const NewPost = ({ addNewPost }) => {
             <input
               type="text"
               value={title}
+    
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Enter blog title"
@@ -104,6 +118,7 @@ const NewPost = ({ addNewPost }) => {
           </button>
         </div>
       </div>
+      <ToastContainer />
     </section>
   );
 };
