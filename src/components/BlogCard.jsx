@@ -3,7 +3,7 @@ import React from "react";
 const BlogCard = ({ post }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      {/* Display the uploaded image */}
+
       {post.image && (
         <img
           src={post.image}

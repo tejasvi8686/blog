@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { categories } from "../../../constant/index.js";
+import { categories, locations } from "../../../constant/index.js"; 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -11,6 +11,7 @@ const NewPost = ({ addNewPost }) => {
   const [category, setCategory] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState("");
   const navigate = useNavigate();
 
   // handle image function
@@ -26,27 +27,33 @@ const NewPost = ({ addNewPost }) => {
   };
 
   const handlePost = () => {
+    if (!title || !category || !content || !selectedLocation) {
+      toast.error("Please fill in all required fields!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return;
+    }
+
     const newPost = {
       title,
       category,
       content,
       image,
-      location: "Your Location",
+      location: selectedLocation,
     };
+
     addNewPost(newPost);
-  
-    // Show success toast
+
     toast.success("Post created successfully!", {
       position: "top-right",
-      autoClose: 2000, // 2 seconds before it closes automatically
+      autoClose: 2000,
     });
-  
-    // Navigate to BlogGrid after the toast has had time to display
+
     setTimeout(() => {
       navigate("/dashboard/createblog/newpost/blogGrid");
-    }, 2000); // Wait for 2 seconds before navigating
+    }, 2000);
   };
-  
 
   return (
     <section className="bg-slate-200">
@@ -64,10 +71,10 @@ const NewPost = ({ addNewPost }) => {
             <input
               type="text"
               value={title}
-    
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Enter blog title"
+              required
             />
           </div>
 
@@ -78,6 +85,7 @@ const NewPost = ({ addNewPost }) => {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
+              required
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
             >
               <option value="" disabled>
@@ -103,7 +111,28 @@ const NewPost = ({ addNewPost }) => {
             />
           </div>
 
-          <div className=" sm:pt-10 pt-16  ">
+          <div className="sm:pt-12 pt-16">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Select Location
+            </label>
+            <select
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            >
+              <option value="" disabled>
+                Select Location
+              </option>
+              {locations.map((loc) => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className=" sm:pt-10 pt-10">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Upload Image
             </label>
@@ -112,7 +141,7 @@ const NewPost = ({ addNewPost }) => {
 
           <button
             onClick={handlePost}
-            className="bg-blue-500 text-white px-6 py-2 mt-10 rounded-md hover:bg-blue-700"
+            className="bg-blue-500 text-white px-8 py-2 mt-10 rounded-md hover:bg-blue-700"
           >
             Post
           </button>
