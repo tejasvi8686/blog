@@ -12,8 +12,8 @@ const NewPost = ({ addNewPost }) => {
 
   const handlePost = () => {
     const newPost = { title, category, content, location: "Your Location" };
-    addNewPost(newPost);
-    navigate("/blogGrid");
+    addNewPost(newPost); 
+    navigate("/dashboard/createblog/newpost/blogGrid");
   };
 
   return (

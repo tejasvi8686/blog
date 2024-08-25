@@ -37,7 +37,7 @@ const BlogGrid = ({ posts }) => {
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
               <img
-                src={post.image}
+                src={post.image || "default-image-url.jpg"}
                 alt={post.title}
                 className="w-full h-48 object-cover"
               />
