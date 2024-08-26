@@ -1,47 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { categories, locations } from "../../../constant/index.js";
-import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { categories, locations } from "../../../constant/index";
 
-const NewPost = ({ addNewPost, posts, updatePost }) => {
+const EditPost = ({ posts, updatePost }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [post, setPost] = useState(null);
 
   useEffect(() => {
-    if (id) {
-      const postToEdit = posts.find((post) => post.id === parseInt(id));
-      if (postToEdit) {
-        setTitle(postToEdit.title);
-        setCategory(postToEdit.category);
-        setContent(postToEdit.content);
-        setImage(postToEdit.image);
-        setSelectedLocation(postToEdit.location);
-      }
+    const foundPost = posts.find((p) => p.id === parseInt(id));
+    if (foundPost) {
+      setPost(foundPost);
     }
   }, [id, posts]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPost((prevPost) => ({ ...prevPost, [name]: value }));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImage(reader.result);
+      setPost((prevPost) => ({ ...prevPost, image: reader.result }));
     };
     if (file) {
       reader.readAsDataURL(file);
     }
   };
 
-  const handlePost = () => {
-    if (!title || !category || !content || !selectedLocation) {
+  const handleSubmit = () => {
+    if (!post.title || !post.category || !post.content || !post.location) {
       toast.error("Please fill in all required fields!", {
         position: "top-right",
         autoClose: 2000,
@@ -49,39 +43,26 @@ const NewPost = ({ addNewPost, posts, updatePost }) => {
       return;
     }
 
-    const newPost = {
-      title,
-      category,
-      content,
-      image,
-      location: selectedLocation,
-    };
+    updatePost(post);
 
-    if (id) {
-      updatePost({ ...newPost, id: parseInt(id) });
-      toast.success("Post updated successfully!", {
-        position: "top-right",
-        autoClose: 2000,
-      });
-    } else {
-      addNewPost(newPost);
-      toast.success("Post created successfully!", {
-        position: "top-right",
-        autoClose: 2000,
-      });
-    }
+    toast.success("Post updated successfully!", {
+      position: "top-right",
+      autoClose: 2000,
+    });
 
     setTimeout(() => {
       navigate("/createblog/newpost/blogGrid");
     }, 2000);
   };
 
+  if (!post) return <div>Loading...</div>;
+
   return (
     <section className="bg-slate-200">
       <div className="max-w-5xl mx-auto p-6">
         <div className="bg-blue-500 text-white py-2 px-4 rounded-t-lg">
-          <button className="bg-yellow-400  text-black px-7 py-2 rounded-full">
-            {id ? "Edit Post" : "New Post"}
+          <button className="bg-yellow-400 text-black px-7 py-2 rounded-full">
+            Edit Post
           </button>
         </div>
         <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -91,8 +72,9 @@ const NewPost = ({ addNewPost, posts, updatePost }) => {
             </label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              name="title"
+              value={post.title}
+              onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Enter blog title"
               required
@@ -104,8 +86,9 @@ const NewPost = ({ addNewPost, posts, updatePost }) => {
               Select Category
             </label>
             <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              name="category"
+              value={post.category}
+              onChange={handleInputChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
             >
@@ -124,10 +107,19 @@ const NewPost = ({ addNewPost, posts, updatePost }) => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Enter Content
             </label>
+            {/* <textarea
+              name="content"
+              value={post.content}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md h-60"
+              placeholder="Enter content"
+              required
+            /> */}
+
             <ReactQuill
               theme="snow"
-              value={content}
-              onChange={setContent}
+              value={post.content}
+              onChange={handleInputChange}
               className="h-60"
             />
           </div>
@@ -137,8 +129,9 @@ const NewPost = ({ addNewPost, posts, updatePost }) => {
               Select Location
             </label>
             <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
+              name="location"
+              value={post.location}
+              onChange={handleInputChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
             >
@@ -153,18 +146,25 @@ const NewPost = ({ addNewPost, posts, updatePost }) => {
             </select>
           </div>
 
-          <div className=" sm:pt-10 pt-10">
+          <div className="sm:pt-10 pt-10">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Upload Image
             </label>
             <input type="file" onChange={handleImageChange} />
+            {post.image && (
+              <img
+                src={post.image}
+                alt="Current"
+                className="w-full h-60 object-cover mt-4"
+              />
+            )}
           </div>
 
           <button
-            onClick={handlePost}
+            onClick={handleSubmit}
             className="bg-blue-500 text-white px-8 py-2 mt-10 rounded-md hover:bg-blue-700"
           >
-            {id ? "Update Post" : "Create Post"}
+            Update Post
           </button>
         </div>
       </div>
@@ -173,4 +173,4 @@ const NewPost = ({ addNewPost, posts, updatePost }) => {
   );
 };
 
-export default NewPost;
+export default EditPost;
